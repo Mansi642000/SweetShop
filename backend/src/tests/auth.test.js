@@ -18,3 +18,15 @@ it('POST /api/auth/register should return 400 for duplicate username', async () 
   expect(response.status).toBe(400);
   expect(response.body).toHaveProperty('message', 'Username already exists');
 });
+it('POST /api/auth/login should log in a user with valid credentials', async () => {
+  await pool.query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [
+    'testuser',
+    await bcrypt.hash('Test@123', 10),
+    'user',
+  ]);
+  const response = await request(app)
+    .post('/api/auth/login')
+    .send({ username: 'testuser', password: 'Test@123' });
+  expect(response.status).toBe(200);
+  expect(response.body).toHaveProperty('token');
+});
