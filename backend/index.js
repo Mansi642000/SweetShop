@@ -2,14 +2,17 @@ const express = require('express');
 require('dotenv').config();
 const pool = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const sweetsRoutes = require('./routes/sweetsRoutes');
 
 const app = express();
 
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/sweets', sweetsRoutes);
 
+// Test DB connection route
 app.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
@@ -20,4 +23,5 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 5000, () => console.log(`✅ Server running on http://localhost:${process.env.PORT || 5000}`));
+// 👇 Export app (important for Jest)
+module.exports = app;
